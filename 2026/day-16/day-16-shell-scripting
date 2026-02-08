@@ -1,0 +1,271 @@
+
+# Day 16 – Shell Scripting Basics
+
+## Task 1 – First Script
+
+### Script: `hello.sh`
+
+```bash
+#!/bin/bash
+echo "Hello, DevOps!"
+```
+
+### Commands
+
+```bash
+chmod +x hello.sh
+./hello.sh
+```
+
+### Output
+![alt text](image-1.png)
+
+
+
+### What happens without shebang?
+
+* Script may still run if executed with `bash hello.sh`
+* But `./hello.sh` may fail or use the wrong shell
+* Shebang tells the system which interpreter to use
+
+---
+
+## Task 2 – Variables
+
+### Script: `variables.sh`
+![alt text](image-2.png)
+
+```bash
+#!/bin/bash
+
+NAME="Ankita"
+ROLE="DevOps Engineer"
+
+echo "Hello, I am $NAME and I am a $ROLE"
+```
+
+### Output
+
+```
+![alt text](image-4.png)
+```
+
+### Single vs Double Quotes
+
+```bash
+echo 'Hello $NAME'
+echo "Hello $NAME"
+```
+
+**Output:**
+
+![alt text](image-3.png)
+
+**Difference:**
+
+* Single quotes → no variable expansion
+* Double quotes → variables are expanded
+
+---
+
+## Task 3 – User Input
+
+### Script: `greet.sh`
+
+```bash
+#!/bin/bash
+
+read -p "Enter your name: " name
+read -p "Enter your favourite tool: " tool
+
+echo "Hello $name, your favourite tool is $tool"
+```
+
+### Output 
+![alt text](image-5.png)
+
+## Task 4 – If-Else Conditions
+
+### Script 1: `check_number.sh`
+
+```bash
+#!/bin/bash
+
+read -p "Enter a number: " num
+
+if [ $num -gt 0 ]; then
+    echo "Positive number"
+elif [ $num -lt 0 ]; then
+    echo "Negative number"
+else
+    echo "Zero"
+fi
+```
+
+### Output
+
+![alt text](image-6.png)
+
+---
+
+### Script 2: `file_check.sh`
+
+```bash
+#!/bin/bash
+
+read -p "Enter filename: " file
+
+if [ -f "$file" ]; then
+    echo "File exists"
+else
+    echo "File does not exist"
+fi
+```
+
+### Output :
+![alt text](image-7.png)
+
+---
+
+## Task 5 – Server Check Script
+
+### Script: `server_check.sh`
+
+```bash
+#!/bin/bash
+
+SERVICE="sshd"
+
+read -p "Do you want to check the status of $SERVICE? (y/n): " choice
+
+if [ "$choice" == "y" ]; then
+    systemctl is-active --quiet $SERVICE
+    if [ $? -eq 0 ]; then
+        echo "$SERVICE is active"
+    else
+        echo "$SERVICE is not active"
+    fi
+else
+    echo "Skipped."
+fi
+```
+
+![alt text](image-8.png)
+
+---
+
+## What is `$?` in Shell Script?
+
+`$?` is a **special variable** in Linux shell.
+
+It stores the **exit status** of the **last executed command**.
+
+### Exit status meaning
+
+| Exit Code         | Meaning          |
+| ----------------- | ---------------- |
+| `0`               | Success          |
+| Non-zero (1,2,3…) | Error or failure |
+
+---
+
+### Example
+
+```bash
+ls
+echo $?
+```
+
+If `ls` runs successfully:
+
+```
+0
+```
+
+If command fails:
+
+```bash
+ls not_existing_file
+echo $?
+```
+
+Output:
+
+```
+2
+```
+
+That means the previous command **failed**.
+
+---
+
+## What does `[ $? -eq 0 ]` mean?
+
+This is a **condition check** inside an `if` statement.
+
+### Breakdown
+
+| Part  | Meaning                       |
+| ----- | ----------------------------- |
+| `$?`  | Exit status of last command   |
+| `-eq` | Equal to (numeric comparison) |
+| `0`   | Success code                  |
+
+So:
+
+```bash
+[ $? -eq 0 ]
+```
+
+Means:
+
+➡️ “Check if the previous command was successful.”
+
+---
+
+### Full Example
+
+```bash
+ping -c 1 google.com
+
+if [ $? -eq 0 ]; then
+    echo "Ping successful"
+else
+    echo "Ping failed"
+fi
+```
+
+### Flow
+
+1. `ping` runs
+2. `$?` stores result
+3. If result = `0` → success
+4. Else → failure
+
+---
+
+## Short DevOps Example
+
+```bash
+docker run nginx
+
+if [ $? -eq 0 ]; then
+    echo "Container started successfully"
+else
+    echo "Container failed to start"
+fi
+
+
+
+>
+
+
+## Key Learnings (3 Points)
+
+1. Shebang (`#!/bin/bash`) tells the system which shell to use.
+2. Variables store data and are accessed using `$`.
+3. If-else conditions help scripts make decisions.
+4. `$?` stores the exit status of the last command.
+5. `[ $? -eq 0 ]` checks if the previous command executed successfully.
+---
+
