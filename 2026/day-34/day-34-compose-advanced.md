@@ -76,6 +76,7 @@ Only **one container will bind port 5000** because:
 ports:
  - "5000:5000"
 ```
+![alt text](image-1.png)
 
 Multiple containers **cannot share the same host port**.
 
