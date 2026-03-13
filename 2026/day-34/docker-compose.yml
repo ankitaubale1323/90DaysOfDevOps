@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+
+  web:
+    build: ./app
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    labels:
+      project: "90days-devops"
+      service: "web"
+    restart: on-failure
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: always
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    labels:
+      project: "90days-devops"
+      service: "database"
+
+  redis:
+    image: redis:7
+    container_name: redis_cache
+    networks:
+      - app-network
+    labels:
+      project: "90days-devops"
+      service: "cache"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
