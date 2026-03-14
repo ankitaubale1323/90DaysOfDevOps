@@ -1,0 +1,19 @@
+# Stage 1 - Builder
+FROM node:18 AS builder
+
+WORKDIR /app
+COPY app.js .
+
+# Stage 2 - Minimal Runtime
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/app.js .
+
+EXPOSE 3000
+
+RUN adduser -D appuser
+USER appuser
+
+CMD ["node", "app.js"]
